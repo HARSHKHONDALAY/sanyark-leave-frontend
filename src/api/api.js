@@ -1,13 +1,13 @@
 import axios from "axios";
 import { getStoredToken } from "../utils/auth";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://35.154.197.206";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    "Content-Type": "application/json"
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 api.interceptors.request.use((config) => {
@@ -49,6 +49,17 @@ export async function getEmployeeDashboard() {
   }
 }
 
+export async function getManagerDashboard() {
+  try {
+    const response = await api.get("/api/dashboard/manager");
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      extractErrorMessage(error, "Failed to fetch manager dashboard.")
+    );
+  }
+}
+
 export async function createLeave(payload) {
   try {
     const response = await api.post("/api/leaves", payload);
@@ -65,7 +76,9 @@ export async function getMyLeaves() {
     const response = await api.get("/api/leaves/my");
     return response.data;
   } catch (error) {
-    throw new Error(extractErrorMessage(error, "Failed to fetch leave history."));
+    throw new Error(
+      extractErrorMessage(error, "Failed to fetch leave history.")
+    );
   }
 }
 
@@ -80,46 +93,59 @@ export async function cancelLeave(id) {
   }
 }
 
-export async function getManagerDashboard() {
-  try {
-    const response = await api.get("/api/dashboard/manager");
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      extractErrorMessage(error, "Failed to fetch manager dashboard.")
-    );
-  }
-}
-
 export async function getAllLeaves() {
   try {
     const response = await api.get("/api/manager/leaves");
     return response.data;
   } catch (error) {
-    throw new Error(extractErrorMessage(error, "Failed to fetch leave requests."));
-  }
-}
-
-export async function approveLeave(id, payload) {
-  try {
-    const response = await api.put(`/api/manager/leaves/${id}/approve`, payload);
-    return response.data;
-  } catch (error) {
     throw new Error(
-      extractErrorMessage(error, "Failed to approve leave request.")
+      extractErrorMessage(error, "Failed to fetch leave requests.")
     );
   }
 }
 
-export async function rejectLeave(id, payload) {
+export async function takeLeaveAction(payload) {
   try {
-    const response = await api.put(`/api/manager/leaves/${id}/reject`, payload);
+    const response = await api.post("/api/manager/leave-action", payload);
     return response.data;
   } catch (error) {
     throw new Error(
-      extractErrorMessage(error, "Failed to reject leave request.")
+      extractErrorMessage(error, "Failed to update leave request.")
     );
   }
 }
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+export async function getTeamCalendar() {
+  try {
+    const response = await api.get("/api/calendar/team");
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      extractErrorMessage(error, "Failed to fetch team calendar.")
+    );
+  }
+}
+
+export async function getHolidays() {
+  try {
+    const response = await api.get("/api/holidays");
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      extractErrorMessage(error, "Failed to fetch holidays.")
+    );
+  }
+}
+
+export async function getNotifications() {
+  try {
+    const response = await api.get("/api/notifications");
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      extractErrorMessage(error, "Failed to fetch notifications.")
+    );
+  }
+}
+
 export default api;
